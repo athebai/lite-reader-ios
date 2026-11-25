@@ -6,6 +6,13 @@ on:
   workflow_dispatch:
 
 jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Linux pool smoke test
+        run: |
+          echo "probe ok on $(uname -s)"
+
   build:
     runs-on: macos-14
     timeout-minutes: 40
