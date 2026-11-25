@@ -33,16 +33,18 @@ jobs:
           xcodegen generate
           ls -la
 
-      - name: Syntax pre-check (parse only, fast)
+      - name: Syntax pre-check (parse only, advisory)
         run: |
+          # 只做提示，不阻断：真正的编译在下面一步。
+          # 用 swift -frontend -parse 避免「using sysroot for MacOSX」刷屏。
           mkdir -p parsed
           find Sources -name '*.swift' -print0 | xargs -0 -n 1 sh -c \
-            'swiftc -parse -target arm64-apple-ios12.0 "$0" 2>parsed/$(echo "$0" | tr "/" "_").err || echo "PARSE FAIL $0"'
+            'swift -frontend -parse "$0" 2>parsed/$(echo "$0" | tr "/" "_").err || echo "PARSE FAIL $0"'
           if grep -q 'error:' parsed/*.err; then
-            echo "---- parse errors ----"
-            cat parsed/*.err
-            exit 1
+            echo "---- parse warnings (non-fatal) ----"
+            grep -h 'error:' parsed/*.err | head -50
           fi
+          echo "pre-check done"
 
       - name: Build (unsigned, iOS 12.0)
         run: |

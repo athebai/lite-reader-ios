@@ -329,8 +329,9 @@ final class PDFReaderViewController: UIViewController {
             showError("当前页没有可摘录的文字")
             return
         }
-        let excerpt = String(cleaned.prefix(120)).replacingOccurrences(of: "
-", with: " ")
+        let excerpt = String(cleaned.prefix(120))
+            .replacingOccurrences(of: "\n", with: " ")
+            .replacingOccurrences(of: "\r", with: " ")
         let sheet = UIAlertController(title: "高亮颜色",
                                       message: "摘录当前页（第 \(pageIndex() + 1) 页）",
                                       preferredStyle: .actionSheet)
