@@ -1,0 +1,81 @@
+name: Build unsigned IPA
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 40
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode (prefer 16.x for iOS 12 targets)
+        run: |
+          if [ -d /Applications/Xcode_16.4.app ]; then
+            sudo xcode-select -s /Applications/Xcode_16.4.app
+          elif [ -d /Applications/Xcode_16.3.app ]; then
+            sudo xcode-select -s /Applications/Xcode_16.3.app
+          fi
+          xcodebuild -version
+          xcodebuild -showsdks | grep -i iphoneos || true
+          swift --version
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: |
+          xcodegen --version
+          xcodegen generate
+          ls -la
+
+      - name: Syntax pre-check (parse only, fast)
+        run: |
+          mkdir -p parsed
+          find Sources -name '*.swift' -print0 | xargs -0 -n 1 sh -c \
+            'swiftc -parse -target arm64-apple-ios12.0 "$0" 2>parsed/$(echo "$0" | tr "/" "_").err || echo "PARSE FAIL $0"'
+          if grep -q 'error:' parsed/*.err; then
+            echo "---- parse errors ----"
+            cat parsed/*.err
+            exit 1
+          fi
+
+      - name: Build (unsigned, iOS 12.0)
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project LiteReader.xcodeproj \
+            -scheme LiteReader \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build
+
+      - name: Package IPA
+        run: |
+          APP="build/Build/Products/Release-iphoneos/LiteReader.app"
+          if [ ! -d "$APP" ]; then
+            echo "Build product not found: $APP"
+            exit 1
+          fi
+          mkdir -p Payload
+          cp -R "$APP" Payload/
+          zip -qry LiteReader-unsigned.ipa Payload
+          ls -lh LiteReader-unsigned.ipa
+          /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$APP/Info.plist"
+          /usr/libexec/PlistBuddy -c "Print :MinimumOSVersion" "$APP/Info.plist"
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: LiteReader-unsigned-ipa
+          path: LiteReader-unsigned.ipa
+          retention-days: 30
