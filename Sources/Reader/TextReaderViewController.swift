@@ -394,7 +394,7 @@ final class TextReaderViewController: UIViewController {
             width = max(60, textView.bounds.width - inset.left - inset.right)
         }
         textView.textContainer.size = CGSize(width: width, height: CGFLOAT_MAX)
-        textView.textContainer.exclusionPath = nil
+        textView.textContainer.exclusionPaths = []
     }
 
     private func currentRatio() -> Double {
@@ -436,7 +436,8 @@ final class TextReaderViewController: UIViewController {
     @objc private func highlightSelection() {
         let range = textView.selectedRange
         if range.length > 0 {
-            let text = textView.text?.substring(with: range) ?? ""
+            let source = textView.text as NSString?
+            let text = source?.substring(with: range) ?? ""
             let sheet = UIAlertController(title: "高亮颜色",
                                           message: "已选中 \(range.length) 字",
                                           preferredStyle: .actionSheet)
@@ -457,9 +458,9 @@ final class TextReaderViewController: UIViewController {
         let location = chapterStart + min(range.location, max(0, fullText.length - chapterStart))
         let ratio = fullText.length > 0 ? Double(location) / Double(fullText.length) : 0
         HighlightsStore.shared.add(text: text, color: color, ratio: ratio, for: book.fileName)
-        textView.textStorage?.addAttribute(.backgroundColor,
-                                           value: HighlightColor.color(color),
-                                           range: range)
+        textView.textStorage.addAttribute(.backgroundColor,
+                                            value: HighlightColor.color(color),
+                                            range: range)
         textView.selectedRange = NSRange(location: NSNotFound, length: 0)
     }
 

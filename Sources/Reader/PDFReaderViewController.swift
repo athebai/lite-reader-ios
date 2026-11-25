@@ -289,7 +289,7 @@ final class PDFReaderViewController: UIViewController {
         guard let document = document, pageCount > 0 else { return }
         let target = max(0, min(pageCount - 1, pageIndex() + delta))
         if let page = document.page(at: target) {
-            pdfView.go(to: page, animated: true)
+            pdfView.go(to: page)
         }
     }
 

@@ -78,8 +78,8 @@ final class HighlightsViewController: UITableViewController {
     override func tableView(_ tableView: UITableView,
                             cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let identifier = "HighlightCell"
-        let cell = tableView.dequeueReusableCell(withIdentifier: identifier) ?? HighlightCell(style: .default,
-                                                                                       reuseIdentifier: identifier)
+        let cell = (tableView.dequeueReusableCell(withIdentifier: identifier) as? HighlightCell)
+            ?? HighlightCell(style: .default, reuseIdentifier: identifier)
         cell.selectionStyle = .none
         let item = highlights[indexPath.row]
         cell.bar.backgroundColor = HighlightColor.color(item.color)

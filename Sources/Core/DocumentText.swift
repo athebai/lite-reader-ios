@@ -69,7 +69,7 @@ enum DocumentText {
             text = regex.stringByReplacingMatches(in: text,
                                                   options: [],
                                                   range: NSRange(location: 0, length: (text as NSString).length),
-                                                  with: replacement)
+                                                  withTemplate: replacement)
         }
         text = text.replacingOccurrences(of: "&nbsp;", with: " ")
         text = text.replacingOccurrences(of: "&lt;", with: "<")
@@ -90,12 +90,12 @@ enum DocumentText {
         var result = regex.stringByReplacingMatches(in: text,
                                                     options: [],
                                                     range: NSRange(location: 0, length: (text as NSString).length),
-                                                    with: "\n")
+                                                    withTemplate: "\n")
         if let many = try? NSRegularExpression(pattern: "\\n{3,}", options: []) {
             result = many.stringByReplacingMatches(in: result,
                                                    options: [],
                                                    range: NSRange(location: 0, length: (result as NSString).length),
-                                                   with: "\n\n")
+                                                   withTemplate: "\n\n")
         }
         return result
     }

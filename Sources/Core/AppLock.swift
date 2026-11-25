@@ -52,17 +52,17 @@ final class AppLockGateViewController: UIViewController {
     private let field = UITextField(frame: .zero)
     private let hint = UILabel(frame: .zero)
     private let button = UIButton(type: .system)
-    private let title = UILabel(frame: .zero)
+    private let titleLabel = UILabel(frame: .zero)
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         title = "密码验证"
 
-        title.text = "轻阅读"
-        title.font = UIFont.systemFont(ofSize: 22, weight: .medium)
-        title.textAlignment = .center
-        title.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.text = "轻阅读"
+        titleLabel.font = UIFont.systemFont(ofSize: 22, weight: .medium)
+        titleLabel.textAlignment = .center
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
 
         field.isSecureTextEntry = true
         field.placeholder = "登录密码"
@@ -83,16 +83,16 @@ final class AppLockGateViewController: UIViewController {
         button.addTarget(self, action: #selector(submit), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
 
-        view.addSubview(title)
+        view.addSubview(titleLabel)
         view.addSubview(field)
         view.addSubview(hint)
         view.addSubview(button)
         NSLayoutConstraint.activate([
-            title.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            title.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 120),
+            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 120),
             field.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
             field.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
-            field.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 28),
+            field.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 28),
             hint.leadingAnchor.constraint(equalTo: field.leadingAnchor),
             hint.topAnchor.constraint(equalTo: field.bottomAnchor, constant: 6),
             button.leadingAnchor.constraint(equalTo: field.leadingAnchor),
