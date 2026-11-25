@@ -283,7 +283,7 @@ enum EPUBParser {
             text = regex.stringByReplacingMatches(in: text,
                                                   options: [],
                                                   range: NSRange(location: 0, length: (text as NSString).length),
-                                                  with: " ")
+                                                  withTemplate: " ")
         }
         text = text.replacingOccurrences(of: "&nbsp;", with: " ")
         text = text.replacingOccurrences(of: "&amp;", with: "&")
